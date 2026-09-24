@@ -30,7 +30,7 @@ $$
 \widehat \Gamma_k = \widehat\gamma_{2k} + \widehat\gamma_{2k+1}
 $$
 
-The *autocorrelation time* can be taken to be the last index $m$ for which $\widehat\Gamma_k>0$. This can be refined by using the *initial monotone sequence estimator*:
+The *autocorrelation time* can be taken to be twice the last index $m$ for which $\widehat\Gamma_k>0$. This can be refined by using the *initial monotone sequence estimator*:
 
 $$
 \widehat\Gamma_{\mathrm{mono},k} = \min(\widehat\Gamma_{k-1}, \widehat\Gamma_k), \quad \widehat\Gamma_{\mathrm{mono},0} = \widehat\Gamma_0
