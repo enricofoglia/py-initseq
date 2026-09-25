@@ -51,5 +51,7 @@ def main():
     fig.tight_layout()
     plt.show()
 
+    fig.savefig("ar1_example.png", dpi=300, bbox_inches="tight")
+
 if __name__ == "__main__":
     main()

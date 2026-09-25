@@ -97,13 +97,15 @@ reaches a plateau at $\tau_{\mathrm{int}}$ for large enough $b$. It makes no ass
 ## Convergence
 
 Compute the convergence up to fourth order by computing the first 4 standardized moments:
- * **average** $\mu_1 = \mathbb E(X)$
+ * **average** $\mu = \mu_1 = \mathbb E(X)$
  * **standard deviation** $\sigma = \mu_2^{1/2} = \sqrt{\mathbb E[(X-\mu_1)^2]}$ 
  * **skewness** $\alpha_3 = \mu_3 / \mu_2^{3/2} = \frac{\mathbb E[(X-\mu_1)^3]}{\mathbb E^{3/2}[(X-\mu_1)^2]}$
  * **flatness** $\alpha_4 = \mu_4 / \mu_2^{4/2} = \frac{\mathbb E[(X-\mu_1)^4]}{\mathbb E^{4/2}[(X-\mu_1)^2]}$
 
-The expected values are computed in time as a running average to show the convergence, as:
+The expected values are computed in time as a running average to show the convergence:
 
 $$
-    \widehat\mu_1(t) = \frac{1}{t}\sum_{k=1}^t X_k
+    \widehat\mu_1(t) = \frac{1}{t}\sum_{k=1}^t X_k\\
+    \widehat\sigma(t) = \sqrt{\frac{1}{t}\sum_{k=1}^t(X_k-\widehat\mu(T))^2}\\
+    \widehat\alpha_m(t) = \frac{1}{\widehat\sigma(T)^m}\frac{1}{t}\sum_{k=1}^t(X_k-\widehat\mu(T))^m
 $$
