@@ -5,7 +5,8 @@ from scipy.signal import correlate
 
 logger = logging.getLogger(__name__)
 
-def greatest_convex_minorant(f:np.ndarray, x:np.ndarray | None = None)->tuple[np.ndarray,np.ndarray]:
+
+def greatest_convex_minorant(f: np.ndarray, x: np.ndarray | None = None) -> tuple[np.ndarray, np.ndarray]:
     """Greatest convex minorant of samples f at sorted abscissae x.
 
     Returns (g, hull): g evaluated on x, and the indices of the hull vertices.
@@ -27,30 +28,32 @@ def greatest_convex_minorant(f:np.ndarray, x:np.ndarray | None = None)->tuple[np
         hull.append(i)
 
     hull = np.asarray(hull)
-    g = np.interp(x, x[hull], f[hull])
+    g = np.interp(x, x[hull], f[hull]) # type: ignore
     return g, hull
 
-def _empirical_correlation(x:np.ndarray, unbiased:bool=False)->np.ndarray:
+
+def _empirical_correlation(x: np.ndarray, unbiased: bool = False) -> np.ndarray:
     r"""Compute the empirical autocorrelation function:
-    
+
     .. math::
 
          \widehat\gamma_k = \frac{1}{T}\sum_{t=1}^{T-k}(X_t-\widehat\mu)(X_{t+k}-\widehat\mu)
 
     where :math:`\widehat{\mu}` is the empirical average.
     """
-    
+
     x_ = x - x.mean()
-    conv = correlate(x_ ,x_, mode="full", method="fft")
+    conv = correlate(x_, x_, mode="full", method="fft")
     if unbiased:
-        norm = np.arange(1, len(x)+1)[::-1]
+        norm = np.arange(1, len(x) + 1)[::-1]
     else:
         norm = len(x)
 
     logger.debug(f"conv.shape = {conv.shape}")
-    return conv[len(conv)//2:] / norm
+    return conv[len(conv) // 2 :] / norm
 
-def _gamma_pairs(x:np.ndarray)->np.ndarray:
+
+def _gamma_pairs(x: np.ndarray) -> np.ndarray:
     r"""Sums of adjacent autocovariances, :math:`\widehat\Gamma_k = \widehat\gamma_{2k} + \widehat\gamma_{2k+1}`.
 
     The last lag is dropped when the number of lags is odd.
@@ -59,7 +62,8 @@ def _gamma_pairs(x:np.ndarray)->np.ndarray:
     n = len(gam) - len(gam) % 2
     return gam[0:n:2] + gam[1:n:2]
 
-def ipse(x:np.ndarray)->np.ndarray:
+
+def ipse(x: np.ndarray) -> np.ndarray:
     r"""Compute the initial positive sequence estimator.
 
     Returns :math:`\widehat\Gamma_0,\dots,\widehat\Gamma_m`, where :math:`m` is the
@@ -70,21 +74,25 @@ def ipse(x:np.ndarray)->np.ndarray:
     m = nonpos[0] if nonpos.size else len(gam)
     return gam[:m]
 
-def imse(x:np.ndarray)->np.ndarray:
+
+def imse(x: np.ndarray) -> np.ndarray:
     r"""Compute the initial monotone sequence estimator, the running minimum of the
     initial positive sequence: :math:`\min(\widehat\Gamma_0,\dots,\widehat\Gamma_k)`.
     """
     return np.minimum.accumulate(ipse(x))
 
-def icse(x:np.ndarray)->np.ndarray:
+
+def icse(x: np.ndarray) -> np.ndarray:
     """Compute the initial convex sequence estimator, the greatest convex minorant
     of the initial monotone sequence.
     """
     return greatest_convex_minorant(imse(x))[0]
 
+
 _ESTIMATORS = {"positive": ipse, "monotone": imse, "convex": icse}
 
-def integrated_time(x:np.ndarray, method:str="convex")->tuple[float,int]:
+
+def integrated_time(x: np.ndarray, method: str = "convex") -> tuple[float, int]:
     r"""Integrated autocorrelation time, in samples [Geyer1992]:
 
     .. math::
@@ -105,7 +113,8 @@ def integrated_time(x:np.ndarray, method:str="convex")->tuple[float,int]:
     tau = (-gam0 + 2 * gam.sum()) / gam0
     return tau, 2 * len(gam) - 1
 
-def correlation_time(x:np.ndarray, dt:float=1.0, method:str="convex")->float:
+
+def correlation_time(x: np.ndarray, dt: float = 1.0, method: str = "convex") -> float:
     r"""Correlation time (integral time scale), in the units of the time step ``dt``:
 
     .. math::
@@ -117,7 +126,10 @@ def correlation_time(x:np.ndarray, dt:float=1.0, method:str="convex")->float:
     """
     return 0.5 * dt * integrated_time(x, method)[0]
 
-def batch_means(x:np.ndarray, block_sizes:np.ndarray=None, min_batches:int=10)->tuple[np.ndarray,np.ndarray,np.ndarray]:
+
+def batch_means(
+    x: np.ndarray, block_sizes: np.ndarray | None = None, min_batches: int = 10
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     r"""Batch-means estimate of the integrated autocorrelation time as a function of
     the block size :math:`b`:
 
@@ -145,7 +157,7 @@ def batch_means(x:np.ndarray, block_sizes:np.ndarray=None, min_batches:int=10)->
 
     tau = np.empty(len(b))
     for i, (bi, ni) in enumerate(zip(b, nb)):
-        means = x[:ni * bi].reshape(ni, bi).mean(axis=1)
+        means = x[: ni * bi].reshape(ni, bi).mean(axis=1)
         tau[i] = bi * means.var(ddof=1) / x.var()
     err = tau * np.sqrt(2 / (nb - 1))
     return b, tau, err

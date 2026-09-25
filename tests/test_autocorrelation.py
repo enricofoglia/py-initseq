@@ -7,7 +7,7 @@ from py_initseq import autocorrelation as ac
 def test_empirical_correlation_matches_direct_sum(rng):
     x = rng.normal(size=11)
     xc = x - x.mean()
-    direct = np.array([xc[:len(x) - k] @ xc[k:] for k in range(len(x))])
+    direct = np.array([xc[: len(x) - k] @ xc[k:] for k in range(len(x))])
     np.testing.assert_allclose(ac._empirical_correlation(x), direct / len(x))
     np.testing.assert_allclose(ac._empirical_correlation(x, unbiased=True), direct / (len(x) - np.arange(len(x))))
 
@@ -48,7 +48,7 @@ def test_integrated_time_positive_is_truncated_sum(ar1):
     x = ar1(0.5, 10_000)
     tau, lag = ac.integrated_time(x, "positive")
     rho = ac._empirical_correlation(x) / x.var()
-    assert tau == pytest.approx(1 + 2 * rho[1:lag + 1].sum())
+    assert tau == pytest.approx(1 + 2 * rho[1 : lag + 1].sum())
 
 
 def test_correlation_time(ar1):
