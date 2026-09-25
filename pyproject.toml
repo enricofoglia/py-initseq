@@ -1,7 +1,7 @@
 [project]
-name = "wind-tunnel"
+name = "py-initseq"
 version = "0.1.0"
-description = "Add your description here"
+description = "Initial sequence method for autocorrelation estimation."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -10,3 +10,7 @@ dependencies = [
     "pyqt6>=6.11.0",
     "scipy>=1.18.1",
 ]
+
+[build-system]
+requires = ["uv_build>=0.12.19,<0.13"]
+build-backend = "uv_build"
