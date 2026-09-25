@@ -5,7 +5,7 @@ from scipy.signal import correlate
 
 logger = logging.getLogger(__name__)
 
-def greatest_convex_minorant(f:np.ndarray, x:np.ndarray=None)->tuple[np.ndarray,np.ndarray]:
+def greatest_convex_minorant(f:np.ndarray, x:np.ndarray | None = None)->tuple[np.ndarray,np.ndarray]:
     """Greatest convex minorant of samples f at sorted abscissae x.
 
     Returns (g, hull): g evaluated on x, and the indices of the hull vertices.
